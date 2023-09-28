@@ -25,7 +25,7 @@
 # to be uploaded on the avr
 # you can add multiple files, they will be all generated
 
-BINS=uart.elf 
+BINS=uart.elf
 
 # put here the additional .o files you want to generate
 # one .c file for each .o should be present
@@ -33,6 +33,9 @@ OBJS=
 
 # put here the additional header files needed for compilation
 HEADERS=
+
+client:	client.c serial_linux.c
+	gcc --std=gnu99 -o $@ $^
 
 # the file below contains the actual rules
 
