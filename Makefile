@@ -38,7 +38,7 @@ HEADERS=uart.h\
 	encoder_new.h\
 	buffered_rw.h
 
-BINS= main.elf tcb_queue_test.elf
+BINS= main.elf client
 
 .phony:	clean all
 
@@ -58,6 +58,9 @@ all:	$(BINS)
 %.hex:	%.elf
 	avr-objcopy -O ihex -R .eeprom $< $@
 	$(AVRDUDE) $(AVRDUDE_FLAGS) -U flash:w:$@:i #$(AVRDUDE_WRITE_EEPROM) 
+
+client:	client.c serial_linux.c 
+	gcc --std=gnu99 -o build/$@ $^
 
 clean:	
 	rm -rf $(OBJS) $(BINS) *.hex *~ *.o

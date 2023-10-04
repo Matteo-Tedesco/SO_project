@@ -32,12 +32,7 @@ int main(void){
   while (1) {
     int n_read=read(fd, buf, 100);
     for (int i=0; i<n_read; ++i) {
-      if(buf[i]=='\n') {
-        printf(" EOL\n");
-        return 0;
-      } else {
-        printf("%c", buf[i]);
-      }
+      printf("%c", buf[i]);
     }
   }
   return 0;
