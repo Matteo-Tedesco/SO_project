@@ -63,4 +63,4 @@ client:	client.c serial_linux.c
 	gcc --std=gnu99 -o build/$@ $^
 
 clean:	
-	rm -rf $(OBJS) $(BINS) *.hex *~ *.o
+	rm -rf $(OBJS) $(BINS) *.hex *~ *.o && rm -rf ./build/*

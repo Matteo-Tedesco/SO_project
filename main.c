@@ -15,8 +15,8 @@
 #include "buffered_rw.h"
 #define THREAD_STACK_SIZE 128
 #define IDLE_STACK_SIZE 128
-#define READ_BUFFER_SIZE 32
-#define WRITE_BUFFER_SIZE 32
+#define READ_BUFFER_SIZE 10
+#define WRITE_BUFFER_SIZE 10
 
 void pwm_thread (uint32_t useless_numba);
 char read_buffer[READ_BUFFER_SIZE];
@@ -33,15 +33,17 @@ void r1_fn(uint32_t arg ){
   while(1){
     cli();
     if(rd.status != Empty){
+      //BUF_print(&rd);
       char c = getChar();
-      printf("r1: getChar() : ");
-      printf("%c\n",c);
+      printf("r1: read on  read_buffer '%c' -->",c);
+      BUF_print(&rd);
     } else {
+      BUF_print(&rd);
       printf("r1 null read\n");
       //r1_tcb.status = Terminated;
     }
     sei();
-    _delay_ms(100);
+    _delay_ms(200);
   }
 }
 
@@ -67,8 +69,9 @@ uint8_t w1_stack[THREAD_STACK_SIZE];
 void w1_fn(uint32_t arg ){
   while(1){
     cli();
-    printf("w1: write on write_buffer 't'\n");
-    putChar('t');
+    printf("w1: write on read_buffer 't' -->");
+    BUF_print(&rd);
+    fill_read('|');
     sei();
     _delay_ms(100);
   }
@@ -123,15 +126,15 @@ int main(void){
              r1_fn,
              0);
   
-  TCB_create(&r2_tcb,
-            r2_stack+THREAD_STACK_SIZE-1,
-            r2_fn,
-            0);
-  
-  // TCB_create(&w1_tcb,
-  //           w1_stack+THREAD_STACK_SIZE-1,
-  //           w1_fn,
+  // TCB_create(&r2_tcb,
+  //           r2_stack+THREAD_STACK_SIZE-1,
+  //           r2_fn,
   //           0);
+  
+  TCB_create(&w1_tcb,
+            w1_stack+THREAD_STACK_SIZE-1,
+            w1_fn,
+            0);
 
   // TCB_create(&w2_tcb,
   //           w2_stack+THREAD_STACK_SIZE-1,
@@ -149,13 +152,13 @@ int main(void){
   //           0);
 
   TCBList_enqueue(&running_queue, &r1_tcb);
-  TCBList_enqueue(&running_queue, &r2_tcb);
-  // TCBList_enqueue(&running_queue, &w1_tcb);
+  // TCBList_enqueue(&running_queue, &r2_tcb);
+  TCBList_enqueue(&running_queue, &w1_tcb);
   // TCBList_enqueue(&running_queue, &w2_tcb);
   // TCBList_enqueue(&running_queue, &w3_tcb);
   // TCBList_enqueue(&running_queue, &w4_tcb);
-  for(int i=0;i<20;i++){
-    fill_read('c');
+  for(int i=0;i<5;i++){
+    fill_read('x');
   }
   cli();
   printf("starting\n");

@@ -13,22 +13,24 @@ void BUF_create(BUF* buf,char* buffer, int size){
   buf->status=Empty;
   buf->r_idx=0;
   buf->w_idx=0;
+
+  for(int i = 0;i<size;i++){
+    buffer[i]='\0';
+  }
+
   return;
 };
 
 void BUF_print(BUF* buffer){
-  if(buffer == NULL || buffer->size == 0 || buffer->status == Empty ) {
-    printf("Nothing to print...\n");
-    return;
-  }
-  printf("inizio stampa buffer di dimensione %d\n",buffer->size);
+  printf("\tD %d\tRD_I: %d\tWR_I: %d\tS: %x -> ",buffer->size, buffer->r_idx, buffer->w_idx, buffer->status);
   for(int i = 0;i < buffer->size;i++){
     if(buffer->buffer[i] == '\0') {
-      printf("\n");
-      return;
+      printf("*");
+      continue;
     }
     printf("%c",buffer->buffer[i]);
   }
+  printf("\n");
   return;
 };
 
@@ -62,6 +64,8 @@ void fill_read(char c){
     } else {
       rd.status = Full;
     }
+  } else if(rd.buffer[rd.w_idx] != '\0'){
+    rd.status = Full;
   } else {
     rd.buffer[rd.w_idx] = c;
     rd.w_idx++;
@@ -79,17 +83,19 @@ char getChar(){
     rd.r_idx = 0;
     if(rd.buffer[rd.r_idx] == '\0'){
       rd.status = Empty;
-    }else if( rd.buffer[rd.r_idx] == '\0'){
-      rd.r_idx = 0;
-      return '\0';
     } else {
       rd.status = Filling;
     }
     return c;
+  } else if( rd.buffer[rd.r_idx] == '\0'){
+    rd.r_idx = 0;
+    rd.status = Empty;
+    return '\0';
   } else {
     char c = rd.buffer[rd.r_idx];
     rd.buffer[rd.r_idx] = '\0';
     rd.r_idx++;
+    rd.status = Filling;
     return c;
   }
 };
