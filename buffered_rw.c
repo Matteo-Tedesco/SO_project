@@ -37,14 +37,17 @@ void BUF_print(BUF* buffer){
 // Put a char in the write buffer
 void putChar(char c){
   if(wr.status == Full) return;
-  if(wr.w_idx == wr.size - 1){
+  if(wr.w_idx == wr.size - 1 && wr.buffer[wr.w_idx] == '\0'){
     wr.buffer[wr.w_idx] = c;
-    wr.w_idx=0;
-    if(wr.buffer[wr.w_idx] == '\0'){
+    wr.w_idx=wr.r_idx;
+    if(wr.buffer[0] == '\0'){
       wr.status = Filling;
+      wr.w_idx=0;
     } else {
       wr.status = Full;
     }
+  } else if(wr.buffer[wr.w_idx] != '\0'){
+    wr.status = Full;
   } else {
     wr.buffer[wr.w_idx] = c;
     wr.w_idx++;
@@ -56,11 +59,12 @@ void putChar(char c){
 // Put a char in the read buffer
 void fill_read(char c){
   if(rd.status == Full) return;
-  if(rd.w_idx == rd.size - 1){
+  if(rd.w_idx == rd.size - 1 && rd.buffer[rd.w_idx] == '\0'){
     rd.buffer[rd.w_idx] = c;
-    rd.w_idx=0;
-    if(rd.buffer[rd.w_idx] == '\0'){
+    rd.w_idx=rd.r_idx;
+    if(rd.buffer[0] == '\0'){
       rd.status = Filling;
+      rd.w_idx=0;
     } else {
       rd.status = Full;
     }
