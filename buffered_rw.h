@@ -10,6 +10,8 @@ typedef struct BUF {
   BufferStatus status;
   int r_idx;
   int w_idx;
+  int n_items;
+
 } BUF;
 
 void BUF_create(BUF* buf, char* buffer, int size);
@@ -25,3 +27,11 @@ extern char getChar(void);
 extern void fill_read(char c);
 
 extern char empty_write(void);
+
+//extern void putChar2(char c);
+
+extern char getChar2(void);
+
+extern void fill_read2(char c);
+
+//extern char empty_write2(void);

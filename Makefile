@@ -27,7 +27,8 @@ OBJS=uart.o\
      scheduler.o\
      encoder_new.o\
      pwm.o\
-		 buffered_rw.o
+		 buffered_rw.o\
+		 interrupt.o
 
 HEADERS=uart.h\
         tcb.h.h\
@@ -36,7 +37,8 @@ HEADERS=uart.h\
 	timer.h\
         scheduler.h\
 	encoder_new.h\
-	buffered_rw.h
+	buffered_rw.h\
+	interrupt.h
 
 BINS= main.elf client
 

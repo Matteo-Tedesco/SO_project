@@ -13,6 +13,7 @@ void BUF_create(BUF* buf,char* buffer, int size){
   buf->status=Empty;
   buf->r_idx=0;
   buf->w_idx=0;
+  buf->n_items=0;
 
   for(int i = 0;i<size;i++){
     buffer[i]='\0';
@@ -22,7 +23,7 @@ void BUF_create(BUF* buf,char* buffer, int size){
 };
 
 void BUF_print(BUF* buffer){
-  printf("\tD %d\tRD_I: %d\tWR_I: %d\tS: %x -> ",buffer->size, buffer->r_idx, buffer->w_idx, buffer->status);
+  printf("\tD %d\tN_ITEMS: %d\tRD_I: %d\tWR_I: %d\tS: %x -> ",buffer->size, buffer->n_items, buffer->r_idx, buffer->w_idx, buffer->status);
   for(int i = 0;i < buffer->size;i++){
     if(buffer->buffer[i] == '\0') {
       printf("*");
@@ -81,7 +82,7 @@ void fill_read(char c){
 // Consume char from read buffer
 char getChar(){
   if(rd.status == Empty) return '\0';
-  if(rd.r_idx == rd.size -1){
+  if(rd.r_idx == rd.size -1 && rd.buffer[rd.r_idx] != '\0'){
     char c = rd.buffer[rd.r_idx];
     rd.buffer[rd.r_idx] = '\0';
     rd.r_idx = 0;
@@ -127,4 +128,21 @@ char empty_write(){
     wr.r_idx++;
     return c;
   }
+};
+
+char getChar2(){
+  if(rd.n_items == 0) return '\0';
+  char c = rd.buffer[0];
+  for(int i = 0;i < rd.size - 1; i++){
+    rd.buffer[i] = rd.buffer[i+1];
+  }
+  rd.buffer[rd.size - 1]='\0';
+  rd.n_items--;
+  return c;
+};
+
+void fill_read2(char c){
+  if(rd.n_items == rd.size) return;
+  rd.buffer[rd.n_items] = c;
+  rd.n_items++;
 };
