@@ -39,10 +39,12 @@ void r1_fn(uint32_t arg ){
       BUF_print(&rd);
       sei();
     } else {
+      printf("r1 in waiting\n");
       waitWrite();
+      printf("r1 restored\n");
       sei();
     }
-    _delay_ms(200);
+    _delay_ms(1000);
   }
 }
 
@@ -58,10 +60,12 @@ void r2_fn(uint32_t arg ){
       BUF_print(&rd);
       sei();
     } else {
+      printf("r2 in waiting\n");
       waitWrite();
+      printf("r2 restored\n");
       sei();
     }
-    _delay_ms(200);
+    _delay_ms(1000);
   }
 }
 
@@ -79,6 +83,20 @@ void w1_fn(uint32_t arg ){
   }
 }
 
+TCB w2_tcb;
+uint8_t w2_stack[THREAD_STACK_SIZE];
+void w2_fn(uint32_t arg ){
+  while(1){
+    cli();
+    printf("w2: write on read_buffer 'X' -->");
+    fill_read2('X');
+    BUF_print(&rd);
+    sei();
+    writeInt();
+    _delay_ms(1000);
+  }
+}
+
 int main(void){
   BUF_create(&wr, write_buffer,WRITE_BUFFER_SIZE);
   BUF_create(&rd, write_buffer,READ_BUFFER_SIZE);
@@ -89,10 +107,12 @@ int main(void){
   TCB_create(&r1_tcb, r1_stack+THREAD_STACK_SIZE-1, r1_fn, 0);
   TCB_create(&r2_tcb, r2_stack+THREAD_STACK_SIZE-1, r2_fn, 0);
   TCB_create(&w1_tcb, w1_stack+THREAD_STACK_SIZE-1, w1_fn, 0);
+  TCB_create(&w2_tcb, w2_stack+THREAD_STACK_SIZE-1, w2_fn, 0);
 
   TCBList_enqueue(&running_queue, &r1_tcb);
   TCBList_enqueue(&running_queue, &r2_tcb);
   TCBList_enqueue(&running_queue, &w1_tcb);
+  TCBList_enqueue(&running_queue, &w2_tcb);
 
   cli();
   printf("starting\n");
