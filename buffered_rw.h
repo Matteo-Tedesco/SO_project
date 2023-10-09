@@ -27,11 +27,3 @@ extern char getChar(void);
 extern void fill_read(char c);
 
 extern char empty_write(void);
-
-//extern void putChar2(char c);
-
-extern char getChar2(void);
-
-extern void fill_read2(char c);
-
-//extern char empty_write2(void);

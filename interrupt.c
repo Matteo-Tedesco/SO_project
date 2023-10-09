@@ -97,8 +97,8 @@ void resumeRead(void) {
 void resumeWrite(void) {
   if(writing_queue.size == 0) return; // if the writing queue is empty continue with normal execution
   TCB* old_tcb=current_tcb;
-  TCBList_enqueue(&writing_queue, current_tcb);
-  current_tcb=TCBList_dequeue(&reading_queue);
+  TCBList_enqueue(&running_queue, current_tcb);
+  current_tcb=TCBList_dequeue(&writing_queue);
   if (old_tcb!=current_tcb)
     archContextSwitch(old_tcb, current_tcb);
 }

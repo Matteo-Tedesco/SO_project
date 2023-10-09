@@ -32,18 +32,11 @@ uint8_t r1_stack[THREAD_STACK_SIZE];
 void r1_fn(uint32_t arg ){
   while(1){
     cli();
-    if(rd.n_items != 0){
-      BUF_print(&rd);
-      char c = getChar2();
-      printf("r1: read on  read_buffer '%c' -->",c);
-      BUF_print(&rd);
-      sei();
-    } else {
-      printf("r1 in waiting\n");
-      waitWrite();
-      printf("r1 restored\n");
-      sei();
-    }
+    BUF_print(&rd);
+    char c = getChar();
+    printf("r1: read on  read_buffer '%c' -->",c);
+    BUF_print(&rd);
+    sei();
     _delay_ms(1000);
   }
 }
@@ -53,18 +46,11 @@ uint8_t r2_stack[THREAD_STACK_SIZE];
 void r2_fn(uint32_t arg ){
   while(1){
     cli();
-    if(rd.n_items != 0){
-      BUF_print(&rd);
-      char c = getChar2();
-      printf("r2: read on  read_buffer '%c' -->",c);
-      BUF_print(&rd);
-      sei();
-    } else {
-      printf("r2 in waiting\n");
-      waitWrite();
-      printf("r2 restored\n");
-      sei();
-    }
+    BUF_print(&rd);
+    char c = getChar();
+    printf("r2: read on  read_buffer '%c' -->",c);
+    BUF_print(&rd);
+    sei();
     _delay_ms(1000);
   }
 }
@@ -74,11 +60,10 @@ uint8_t w1_stack[THREAD_STACK_SIZE];
 void w1_fn(uint32_t arg ){
   while(1){
     cli();
+    fill_read('|');
     printf("w1: write on read_buffer '|' -->");
-    fill_read2('|');
     BUF_print(&rd);
     sei();
-    writeInt();
     _delay_ms(1000);
   }
 }
@@ -88,11 +73,10 @@ uint8_t w2_stack[THREAD_STACK_SIZE];
 void w2_fn(uint32_t arg ){
   while(1){
     cli();
+    fill_read('X');
     printf("w2: write on read_buffer 'X' -->");
-    fill_read2('X');
     BUF_print(&rd);
     sei();
-    writeInt();
     _delay_ms(1000);
   }
 }
@@ -109,9 +93,11 @@ int main(void){
   TCB_create(&w1_tcb, w1_stack+THREAD_STACK_SIZE-1, w1_fn, 0);
   TCB_create(&w2_tcb, w2_stack+THREAD_STACK_SIZE-1, w2_fn, 0);
 
+  
+
   TCBList_enqueue(&running_queue, &r1_tcb);
-  TCBList_enqueue(&running_queue, &r2_tcb);
   TCBList_enqueue(&running_queue, &w1_tcb);
+  TCBList_enqueue(&running_queue, &r2_tcb);
   TCBList_enqueue(&running_queue, &w2_tcb);
 
   cli();
