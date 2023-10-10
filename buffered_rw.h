@@ -2,16 +2,10 @@
 #include <stddef.h>
 #include <stdlib.h>
 
-typedef enum {Empty=0x0, Full=0x1, Filling=0x2, Idle=0x3} BufferStatus;
-
 typedef struct BUF {
   int size;
   char* buffer;
-  BufferStatus status;
-  int r_idx;
-  int w_idx;
   int n_items;
-
 } BUF;
 
 void BUF_create(BUF* buf, char* buffer, int size);

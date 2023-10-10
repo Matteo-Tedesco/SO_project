@@ -2,8 +2,6 @@
 
 // main scheduler function
 extern void schedule(void);
-extern void putChar(char c);
-extern void fill_read(char c);
 
 /**
  * \b avrInitSystemTickTimer

@@ -32,9 +32,10 @@ uint8_t r1_stack[THREAD_STACK_SIZE];
 void r1_fn(uint32_t arg ){
   while(1){
     cli();
+    printf("[getChar1] ");
     BUF_print(&rd);
     char c = getChar();
-    printf("r1: read on  read_buffer '%c' -->",c);
+    printf("[getChar1] consumed char on read_buffer -> '%c' \tBUFFER STATUS -->",c);
     BUF_print(&rd);
     sei();
     _delay_ms(1000);
@@ -46,10 +47,41 @@ uint8_t r2_stack[THREAD_STACK_SIZE];
 void r2_fn(uint32_t arg ){
   while(1){
     cli();
+    printf("[getChar2] ");
     BUF_print(&rd);
     char c = getChar();
-    printf("r2: read on  read_buffer '%c' -->",c);
+    printf("[getChar2] consumed char on read_buffer -> '%c' \tBUFFER STATUS -->",c);
     BUF_print(&rd);
+    sei();
+    _delay_ms(1000);
+  }
+}
+
+TCB r3_tcb;
+uint8_t r3_stack[THREAD_STACK_SIZE];
+void r3_fn(uint32_t arg ){
+  while(1){
+    cli();
+    printf("[putChar1] ");
+    BUF_print(&wr);
+    putChar('P');
+    printf("[putChar1] written char on write_buffer -> 'P' \tBUFFER STATUS -->");
+    BUF_print(&wr);
+    sei();
+    _delay_ms(1000);
+  }
+}
+
+TCB r4_tcb;
+uint8_t r4_stack[THREAD_STACK_SIZE];
+void r4_fn(uint32_t arg ){
+  while(1){
+    cli();
+    printf("[putChar2] ");
+    BUF_print(&wr);
+    putChar('X');
+    printf("[putChar2] written char on write_buffer -> 'X' \tBUFFER STATUS -->");
+    BUF_print(&wr);
     sei();
     _delay_ms(1000);
   }
@@ -61,8 +93,6 @@ void w1_fn(uint32_t arg ){
   while(1){
     cli();
     fill_read('|');
-    printf("w1: write on read_buffer '|' -->");
-    BUF_print(&rd);
     sei();
     _delay_ms(1000);
   }
@@ -74,8 +104,28 @@ void w2_fn(uint32_t arg ){
   while(1){
     cli();
     fill_read('X');
-    printf("w2: write on read_buffer 'X' -->");
-    BUF_print(&rd);
+    sei();
+    _delay_ms(1000);
+  }
+}
+
+TCB w3_tcb;
+uint8_t w3_stack[THREAD_STACK_SIZE];
+void w3_fn(uint32_t arg ){
+  while(1){
+    cli();
+    empty_write();
+    sei();
+    _delay_ms(1000);
+  }
+}
+
+TCB w4_tcb;
+uint8_t w4_stack[THREAD_STACK_SIZE];
+void w4_fn(uint32_t arg ){
+  while(1){
+    cli();
+    empty_write();
     sei();
     _delay_ms(1000);
   }
@@ -93,12 +143,22 @@ int main(void){
   TCB_create(&w1_tcb, w1_stack+THREAD_STACK_SIZE-1, w1_fn, 0);
   TCB_create(&w2_tcb, w2_stack+THREAD_STACK_SIZE-1, w2_fn, 0);
 
-  
+  TCB_create(&r3_tcb, r3_stack+THREAD_STACK_SIZE-1, r3_fn, 0);
+  TCB_create(&r4_tcb, r4_stack+THREAD_STACK_SIZE-1, r4_fn, 0);
+  TCB_create(&w3_tcb, w3_stack+THREAD_STACK_SIZE-1, w3_fn, 0);
+  TCB_create(&w4_tcb, w4_stack+THREAD_STACK_SIZE-1, w4_fn, 0);
 
+  // test read buffer and getChar
   TCBList_enqueue(&running_queue, &r1_tcb);
   TCBList_enqueue(&running_queue, &w1_tcb);
   TCBList_enqueue(&running_queue, &r2_tcb);
   TCBList_enqueue(&running_queue, &w2_tcb);
+
+  // test write buffer and putChar
+  // TCBList_enqueue(&running_queue, &r3_tcb);
+  // TCBList_enqueue(&running_queue, &w3_tcb);
+  // TCBList_enqueue(&running_queue, &r4_tcb);
+  //TCBList_enqueue(&running_queue, &w4_tcb);
 
   cli();
   printf("starting\n");

@@ -16,9 +16,6 @@ extern TCBList reading_queue;
 void BUF_create(BUF* buf,char* buffer, int size){
   buf->buffer=buffer;
   buf->size=size;
-  buf->status=Empty;
-  buf->r_idx=0;
-  buf->w_idx=0;
   buf->n_items=0;
 
   for(int i = 0;i<size;i++){
@@ -50,15 +47,17 @@ char getChar(){
   }
   rd.buffer[rd.size - 1]='\0';
   rd.n_items--;
-  if(writing_queue.size != 0 && rd.n_items == rd.size-1) readInt();
+  //if(writing_queue.size != 0 && rd.n_items == rd.size-1) readInt();
   return c;
 };
 
 // Put a char in the read buffer
 void fill_read(char c){
-  if(rd.n_items == rd.size) waitRead();
+  if(rd.n_items == rd.size)return;
   rd.buffer[rd.n_items] = c;
   rd.n_items++;
+  printf("writing on read buffer char -> '%c'            \tBUFFER STATUS -->",c);
+  BUF_print(&rd);
   if(reading_queue.size != 0 && rd.n_items == 1) writeInt();
 };
 
@@ -67,18 +66,20 @@ void putChar(char c){
   if(wr.n_items == wr.size) waitRead();
   wr.buffer[wr.n_items] = c;
   wr.n_items++;
-  if(reading_queue.size != 0) writeInt();
+  //if(reading_queue.size != 0) writeInt();
 };
 
 // Consume char from write buffer
 char empty_write(){
-  if(wr.n_items == 0) waitWrite();
+  if(wr.n_items == 0) return;
   char c = wr.buffer[0];
   for(int i = 0;i < wr.size - 1; i++){
     wr.buffer[i] = wr.buffer[i+1];
   }
   wr.buffer[wr.size - 1]='\0';
   wr.n_items--;
-  if(writing_queue.size != 0) readInt();
+  printf("removing from write buffer char -> '%c'        \tBUFFER STATUS -->",c);
+  BUF_print(&wr);
+  if(writing_queue.size != 0 && wr.n_items == wr.size-1) readInt();
   return c;
 };
