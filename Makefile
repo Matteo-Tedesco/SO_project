@@ -25,8 +25,6 @@ OBJS=uart.o\
      atomport_asm.o\
      timer.o\
      scheduler.o\
-     encoder_new.o\
-     pwm.o\
 		 buffered_rw.o\
 		 interrupt.o
 
@@ -36,7 +34,6 @@ HEADERS=uart.h\
 	atomport_asm.h\
 	timer.h\
         scheduler.h\
-	encoder_new.h\
 	buffered_rw.h\
 	interrupt.h
 

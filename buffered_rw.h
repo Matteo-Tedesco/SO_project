@@ -12,12 +12,14 @@ void BUF_create(BUF* buf, char* buffer, int size);
 
 void BUF_print(BUF* buf);
 
-void BUF_destroy(BUF* buffer);
-
 extern void putChar(char c);
 
 extern char getChar(void);
 
-extern void fill_read(char c);
+extern void fill_read(void);
 
-extern char empty_write(void);
+extern void empty_write(void);
+
+void write_uart(char data);
+
+char read_uart(void);

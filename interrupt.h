@@ -9,12 +9,6 @@
 #include <stdio.h>
 extern void schedule(void);
 
-void enableRWint(void);
-
-void readInt(void);
-
-void writeInt(void);
-
 void waitWrite(void);
 
 void resumeWrite(void);

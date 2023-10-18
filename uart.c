@@ -6,6 +6,8 @@
 #include <avr/interrupt.h>
 #include <stdio.h>
 #include <stdbool.h>
+
+#include "buffered_rw.h"
 // ********************************************************************************
 // Macros and Defines
 // ********************************************************************************
@@ -33,7 +35,7 @@ void usart_init( uint16_t ubrr) {
     UBRR0L = (uint8_t)ubrr;
 
     UCSR0C = _BV(UCSZ01) | _BV(UCSZ00); /* 8-bit data */ 
-    UCSR0B = _BV(RXEN0) | _BV(TXEN0) | _BV(RXCIE0);   /* Enable RX and TX */  
+    UCSR0B = _BV(RXEN0) | _BV(TXEN0) | _BV(RXCIE0) | _BV(TXCIE0);   /* Enable RX and TX with TXCIE0 to send interrupt on transmission completed*/  
 }
 void usart_putchar(char data) {
     // Wait for empty transmit buffer
