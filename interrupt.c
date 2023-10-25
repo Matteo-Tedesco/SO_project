@@ -5,7 +5,8 @@
 #include "buffered_rw.h"
 
 extern void archContextSwitch(TCB* a,TCB* b);
-
+extern BUF wr;
+extern BUF rd;
 // the reading queue
 TCBList reading_queue={
   .first=NULL,
@@ -20,14 +21,14 @@ TCBList writing_queue={
   .size=0
 };
 
-// interrupt on read (this interrupt will trigger a write after a spot in the buffer is emptied)
+// interrupt on uart transmission completed (this interrupt will trigger a write after a spot in the buffer is emptied)
 ISR(USART0_TX_vect) {
   cli();
-  resumeWrite();
+  if(wr.n_items<wr.size) resumeWrite();
   sei();
 };
 
-// interrupt on write (this interrupt will trigger a read after a new char is written in the buffer)
+// interrupt on uart receive complete (this interrupt will trigger a read after a new char is written in the buffer)
 ISR(USART0_RX_vect) {
   cli();
   fill_read();

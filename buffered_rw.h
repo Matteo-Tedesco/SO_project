@@ -3,12 +3,12 @@
 #include <stdlib.h>
 
 typedef struct BUF {
-  int size;
+  uint8_t size;
+  uint8_t n_items;
   char* buffer;
-  int n_items;
 } BUF;
 
-void BUF_create(BUF* buf, char* buffer, int size);
+void BUF_create(BUF* buf, char* buffer, uint8_t size);
 
 void BUF_print(BUF* buf);
 

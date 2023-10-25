@@ -14,7 +14,7 @@ extern BUF wr;
 extern TCBList writing_queue;
 extern TCBList reading_queue;
 
-void BUF_create(BUF* buf,char* buffer, int size){
+void BUF_create(BUF* buf,char* buffer, uint8_t size){
   buf->buffer=buffer;
   buf->size=size;
   buf->n_items=0;
@@ -41,7 +41,7 @@ void BUF_print(BUF* buffer){
   return;
 };
 
-// Consume char from read buffer
+// Consume char from read buffer if the buffer is empty wait for a char to arrive
 char getChar(){
   if(rd.n_items == 0) waitWrite();
   cli();
@@ -64,16 +64,21 @@ void fill_read(){
   rd.n_items++;
 };
 
-// Put a char in the write buffer
+// Put a char in the write buffer if the buffer is full wait for a block to be cleared
 void putChar(char c){
-  if(wr.n_items == wr.size) waitRead();
+  if(wr.n_items == wr.size) {
+    cli();
+    printf("\nwr buff pieno mi metto in coda\n");
+    sei();
+    waitRead();
+  }
   cli();
   wr.buffer[wr.n_items] = c;
   wr.n_items++;
   sei();
 };
 
-// Consume char from write buffer
+// Consume char from write buffer and output it on the serial
 void empty_write(){
   if(wr.n_items == 0) return;
   cli();
@@ -86,8 +91,6 @@ void empty_write(){
   sei();
   write_uart(c);
   write_uart('\n');
-  //if(writing_queue.size != 0 && wr.n_items == wr.size-1) readInt();
-  //return c;
 };
 
 void write_uart(char data) {
